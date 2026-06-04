@@ -1,0 +1,29 @@
+# Entornos virtuales
+venv/
+env/
+.env
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Archivos de Node y JS
+node_modules/
+dist/
+build/
+.npm/
+
+# Base de datos local
+*.db
+*.sqlite3
+
+# Archivos subidos por usuarios
+backend/uploads/
+uploads/
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db

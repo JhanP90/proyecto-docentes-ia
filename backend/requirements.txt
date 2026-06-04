@@ -1,0 +1,26 @@
+# backend/requirements.txt
+# Framework web
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+
+# Base de datos
+sqlalchemy==2.0.36
+# psycopg2-binary==2.9.10       # driver PostgreSQL (comentado para dev local)
+alembic==1.14.0                # migraciones de BD
+
+# Validación y configuración
+pydantic==2.10.3
+pydantic-settings==2.6.1       # lectura de .env
+
+# Seguridad (JWT)
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+cryptography>=41.0.0
+
+# Archivos y IA
+python-multipart==0.0.12       # upload de archivos en FastAPI
+pdfplumber==0.11.4             # extracción de texto de PDFs
+google-generativeai==0.8.3     # SDK de Gemini
+
+# Utilidades
+python-dotenv==1.0.1
