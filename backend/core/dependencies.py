@@ -50,7 +50,13 @@ def get_current_user(
     if user_id is None:
         raise credentials_exception
 
-    user = db.query(Usuario).filter(Usuario.id == user_id).first()
+    import uuid
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except ValueError:
+        raise credentials_exception
+
+    user = db.query(Usuario).filter(Usuario.id == user_uuid).first()
     if user is None:
         raise credentials_exception
 

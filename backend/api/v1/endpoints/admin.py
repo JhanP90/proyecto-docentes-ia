@@ -1,3 +1,4 @@
+import uuid
 # backend/api/v1/endpoints/admin.py
 """
 Router del Panel de Administración.
@@ -114,7 +115,7 @@ def update_regla(
     admin: Administrador = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    regla = db.query(ReglaEvaluacion).filter(ReglaEvaluacion.id == regla_id).first()
+    regla = db.query(ReglaEvaluacion).filter(ReglaEvaluacion.id == (uuid.UUID(regla_id) if isinstance(regla_id, str) else regla_id)).first()
     if not regla:
         raise HTTPException(status_code=404, detail="Regla no encontrada.")
 
@@ -138,7 +139,7 @@ def delete_regla(
     admin: Administrador = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    regla = db.query(ReglaEvaluacion).filter(ReglaEvaluacion.id == regla_id).first()
+    regla = db.query(ReglaEvaluacion).filter(ReglaEvaluacion.id == (uuid.UUID(regla_id) if isinstance(regla_id, str) else regla_id)).first()
     if not regla:
         raise HTTPException(status_code=404, detail="Regla no encontrada.")
     
@@ -218,7 +219,7 @@ def update_estado_aspirante(
     admin: Administrador = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    aspirante = db.query(Aspirante).filter(Aspirante.id == aspirante_id).first()
+    aspirante = db.query(Aspirante).filter(Aspirante.id == (uuid.UUID(aspirante_id) if isinstance(aspirante_id, str) else aspirante_id)).first()
     if not aspirante:
         raise HTTPException(status_code=404, detail="Aspirante no encontrado.")
 

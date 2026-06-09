@@ -1,3 +1,4 @@
+import uuid
 # backend/services/evaluacion_service.py
 """
 Motor de Reglas Dinámico para la Evaluación de Aspirantes.
@@ -42,7 +43,7 @@ def calcular_puntaje_aspirante(db: Session, aspirante_id: str) -> ResultadoEvalu
     """
     # 1. Obtener los datos de IA del aspirante
     # Buscamos a través de la relación aspirante -> hoja_vida -> datos_extraidos
-    aspirante = db.query(Aspirante).filter(Aspirante.id == aspirante_id).first()
+    aspirante = db.query(Aspirante).filter(Aspirante.id == (uuid.UUID(aspirante_id) if isinstance(aspirante_id, str) else aspirante_id)).first()
     if not aspirante:
         raise ValueError(f"Aspirante {aspirante_id} no encontrado.")
 

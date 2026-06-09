@@ -1,3 +1,4 @@
+import uuid
 # backend/api/v1/endpoints/evaluacion.py
 """
 Router para la evaluación y cálculo de puntajes.

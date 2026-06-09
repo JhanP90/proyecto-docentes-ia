@@ -101,7 +101,7 @@ def _procesar_con_ia(hoja_vida_id: str, ruta_archivo: str) -> None:
     logger.info("Iniciando extraccion IA para hoja_vida_id=%s", hoja_vida_id)
 
     # Obtener la hoja de vida fresca (la sesión de BD es nueva en el background)
-    hoja = db.query(HojaDeVida).filter(HojaDeVida.id == hoja_vida_id).first()
+    hoja = db.query(HojaDeVida).filter(HojaDeVida.id == (uuid.UUID(hoja_vida_id) if isinstance(hoja_vida_id, str) else hoja_vida_id)).first()
     if not hoja:
         logger.error("HojaDeVida %s no encontrada en background task", hoja_vida_id)
         db.close()
