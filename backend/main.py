@@ -88,6 +88,7 @@ app.add_middleware(
 
 # ── Archivos estáticos (carpeta uploads) ─────────────────────────
 # Los PDFs subidos se servirán como:  GET /uploads/nombre_archivo.pdf
+os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 

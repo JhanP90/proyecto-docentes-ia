@@ -13,9 +13,8 @@ import datetime
 
 from sqlalchemy import (
     Column, String, Integer, Float, Boolean,
-    ForeignKey, Enum as SAEnum, DateTime, Text, JSON
+    ForeignKey, Enum as SAEnum, DateTime, Text, JSON, Uuid
 )
-from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -60,7 +59,7 @@ class Usuario(Base):
     """
     __tablename__ = "usuarios"
 
-    id            = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id            = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nombres       = Column(String(100), nullable=False)
     apellidos     = Column(String(100), nullable=False)
     email         = Column(String(255), unique=True, nullable=False, index=True)
@@ -95,7 +94,7 @@ class Aspirante(Usuario):
     """
     __tablename__ = "aspirantes_detalles"
 
-    id            = Column(UUID(as_uuid=True), ForeignKey("usuarios.id"), primary_key=True)
+    id            = Column(Uuid(as_uuid=True), ForeignKey("usuarios.id"), primary_key=True)
     cedula        = Column(String(20), unique=True, nullable=False, index=True)
     pais          = Column(String(100), nullable=False, default="Colombia")
     departamento  = Column(String(100), nullable=False)
@@ -126,8 +125,8 @@ class HojaDeVida(Base):
     """
     __tablename__ = "hojas_vida"
 
-    id             = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    aspirante_id   = Column(UUID(as_uuid=True), ForeignKey("aspirantes_detalles.id"), unique=True, nullable=False)
+    id             = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    aspirante_id   = Column(Uuid(as_uuid=True), ForeignKey("aspirantes_detalles.id"), unique=True, nullable=False)
     nombre_archivo = Column(String(255), nullable=False)  # nombre original del archivo
     url_archivo    = Column(String(500), nullable=False)   # ruta relativa en servidor o URL en cloud
     tamano_bytes   = Column(Integer, nullable=True)
@@ -147,17 +146,17 @@ class HojaDeVida(Base):
 class DatosExtraidosIA(Base):
     """
     Almacena el JSON estructurado que retorna Gemini, validado por Pydantic.
-    Usamos JSONB (PostgreSQL) para poder hacer queries sobre el contenido del JSON.
+    Usamos JSON para poder hacer queries sobre el contenido del JSON.
     `validado_por_aspirante` se activa cuando el aspirante confirma/corrige los datos en el split-screen.
     """
     __tablename__ = "datos_extraidos_ia"
 
-    id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    hoja_vida_id    = Column(UUID(as_uuid=True), ForeignKey("hojas_vida.id"), unique=True, nullable=False)
-    # JSONB es PostgreSQL-native: indexable y consultable con operadores ->  ->>
-    json_estructurado = Column(JSONB, nullable=False)
+    id              = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    hoja_vida_id    = Column(Uuid(as_uuid=True), ForeignKey("hojas_vida.id"), unique=True, nullable=False)
+    # JSON es indexable y consultable
+    json_estructurado = Column(JSON, nullable=False)
     # Snapshot de los datos DESPUÉS de que el aspirante los corrigió/validó
-    json_validado   = Column(JSONB, nullable=True)
+    json_validado   = Column(JSON, nullable=True)
     validado_por_aspirante = Column(Boolean, default=False, nullable=False)
     fecha_validacion = Column(DateTime, nullable=True)
     created_at      = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
@@ -173,8 +172,8 @@ class Soporte(Base):
     """
     __tablename__ = "soportes"
 
-    id           = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    aspirante_id = Column(UUID(as_uuid=True), ForeignKey("aspirantes_detalles.id"), nullable=False)
+    id           = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    aspirante_id = Column(Uuid(as_uuid=True), ForeignKey("aspirantes_detalles.id"), nullable=False)
     categoria    = Column(SAEnum(CategoriaRegla, name="categoria_regla"), nullable=False)
     nombre_item  = Column(String(255), nullable=False)   # Ej: "Doctorado en IA"
     descripcion  = Column(Text, nullable=True)
@@ -202,7 +201,7 @@ class ReglaEvaluacion(Base):
     """
     __tablename__ = "reglas_evaluacion"
 
-    id                     = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id                     = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     categoria              = Column(SAEnum(CategoriaRegla, name="categoria_regla_eval"), nullable=False)
     nombre_item            = Column(String(255), nullable=False)
     descripcion            = Column(Text, nullable=True)
@@ -223,16 +222,16 @@ class ReglaEvaluacion(Base):
 class ResultadoEvaluacion(Base):
     """
     Resultado final del cálculo para un aspirante.
-    `desglose_puntaje` guarda el detalle categoría-por-categoría como JSONB,
+    `desglose_puntaje` guarda el detalle categoría-por-categoría como JSON,
     lo que permite mostrar un resumen transparente al aspirante y al admin.
     """
     __tablename__ = "resultados_evaluacion"
 
-    id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    aspirante_id    = Column(UUID(as_uuid=True), ForeignKey("aspirantes_detalles.id"), unique=True, nullable=False)
+    id              = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    aspirante_id    = Column(Uuid(as_uuid=True), ForeignKey("aspirantes_detalles.id"), unique=True, nullable=False)
     puntaje_total   = Column(Float, default=0.0, nullable=False)
     # Ej: {"FORMACION": 38.0, "EXPERIENCIA": 14.0, "PRODUCCION": 45.0, ...}
-    desglose_puntaje = Column(JSONB, nullable=True)
+    desglose_puntaje = Column(JSON, nullable=False)
     fecha_calculo   = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     recalculado     = Column(Boolean, default=False, nullable=False)  # True si fue recalculado tras corrección
 
